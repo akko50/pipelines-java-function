@@ -6,17 +6,34 @@
 trigger:
 - master
 
-pool:
-  vmImage: ubuntu-latest
+variables:
+  azureSubscription: 98e4a57a-31e2-41d5-b6da-03acb4378c45
+  functionAppName: 'PipelineTestGotoApp'
+  vmImageName: 'ubuntu-latest'
 
-steps:
-- task: Maven@3.205.1
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.8'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
+
+# pool:
+#  vmImage: ubuntu-latest
+
+stages:
+- stage: Build
+  displayName: Build stage
+  
+  jobs:
+  - job: Build
+    displayName: Build job
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: Maven@3.205.1
+      displayName: 'maven'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        mavenOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.8'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        goals: 'package'
